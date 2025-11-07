@@ -1,26 +1,173 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&where(.dark, .dark *));
+
+@theme {
+  /* Background */
+  --color-bg-primary: #0a0e1a;
+  --color-bg-secondary: #111827;
+  --color-bg-elevated: #1e293b;
+  --color-bg-hover: #2d3a52;
+
+  /* Text */
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-text-dim: #475569;
+
+  /* Accent Colors */
+  --color-accent: #06b6d4;
+  --color-accent-hover: #0891b2;
+  --color-accent-light: #22d3ee;
+  --color-accent-glow: rgba(6, 182, 212, 0.3);
+
+  /* Secondary Accent */
+  --color-secondary: #a855f7;
+  --color-secondary-hover: #9222ea;
+  --color-secondary-glow: rgba(168, 85, 247, 0.3);
+
+  /* Tertiary Accent */
+  --color-tertiary: #ec4899;
+  --color-tertiary-hover: #db2777;
+  --color-tertiary-glow: rgba(236, 72, 153, 0.3);
+
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-success-glow: rgba(16, 185, 129, 0.3);
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-error-glow: rgba(239, 68, 68, 0.3);
+  --color-info: #3b82f6;
+
+  /* Borders */
+  --color-border: #1e293b;
+  --color-border-accent: #334155;
+  --color-border-glow: rgba(6, 182, 212, 0.2);
+
+  /* Gradients */
+  --gradient-cyber: linear-gradient(135deg, #06b6d4 0%, #a855f7 100%);
+  --gradient-cyber-alt: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  --gradient-dark: linear-gradient(180deg, #0a0e1a 0%, #111827 100%);
+
+  /* Shadows */
+  --shadow-cyan: 0 0 20px rgba(6, 182, 212, 0.4);
+  --shadow-purple: 0 0 20px rgba(168, 85, 247, 0.4);
+  --shadow-pink: 0 0 20px rgba(236, 72, 153, 0.4);
+
+  /* Typography */
+  --font-sans: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.light {
+  /* Background */
+  --color-bg-primary: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-elevated: #f1f5f9;
+  --color-bg-hover: #e2e8f0;
+
+  /* Text */
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-dim: #94a3b8;
+
+  /* Borders */
+  --color-border: #e2e8f0;
+  --color-border-accent: #cbd5e1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-bg-primary text-text-primary;
+    @apply font-sans antialiased;
+
+    /* Subtle background texture */
+    background-image:
+    radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-accent;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-hover;
+  }
+
+  /* Selection Color */
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-bg-primary);
+  }
+
+  /* Focus States w/ Glow */
+  *:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-cyan);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Utility classes for cyber effects */
+@layer utilities {
+
+  .text-gradient-cyber {
+    background: var(--gradient-cyber);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-cyber {
+    background: var(--gradient-cyber);
+  }
+
+  .bg-gradient-cyber-alt {
+    background: var(--gradient-cyber-alt);
+  }
+
+  .border-glow {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 10px var(--color-accent-glow);
+  }
+
+  /* Animated scan line effect */
+  .scan-lines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-lines::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(6, 182, 212, 0.03) 0px,
+      transparent 2px,
+      transparent 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 }
