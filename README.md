@@ -1,3 +1,5 @@
+<!-- markdownlint-disable -->
+
 # TrueWave - Cyber E-Commerce Store
 
 A modern, full-featured e-commerce application with a cyberpunk-inspired design. This project started as a React + Vite application but was migrated to Next.js 16 to take advantage of App Router, Server Components, and better performance optimization.
