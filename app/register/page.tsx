@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User as UserIcon, Loader2 } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Loader2, CheckCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/hooks/store';
 import { register, selectAuthStatus, selectAuthError } from '@/lib/store/authSlice';
 import { errorToast, successToast } from '@/lib/utils/toasts';
@@ -17,6 +17,23 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Password strength indicator
+  const getPasswordStrength = (pwd: string) => {
+    if (pwd.length === 0) return { strength: 0, label: '', color: '' };
+    let strength = 0;
+    if (pwd.length >= 8) strength++;
+    if (/[A-Z]/.test(pwd)) strength++;
+    if (/[0-9]/.test(pwd)) strength++;
+    if (/[^A-Za-z0-9]/.test(pwd)) strength++;
+
+    const labels = ['Very Weak', 'Weak', 'Moderate', 'Strong', 'Very Strong'];
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-emerald-600'];
+
+    return { strength, label: labels[strength], color: colors[strength] };
+  };
+
+  const passwordStrength = getPasswordStrength(password);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -26,12 +43,12 @@ export default function RegisterPage() {
     }
 
     if (password !== confirmPassword) {
-      errorToast('Passwords do not match');
+      errorToast('❌ Passwords do not match');
       return;
     }
 
-    if (password.length < 6) {
-      errorToast('Password must be at least 6 characters');
+    if (password.length < 8) {
+      errorToast('❌ Password must be at least 8 characters');
       return;
     }
 
@@ -103,10 +120,33 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 bg-bg-elevated border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-text-primary placeholder:text-text-muted transition-all"
-                    placeholder="At least 6 characters"
+                    placeholder="At least 8 characters"
                     disabled={status === 'loading'}
                   />
                 </div>
+
+                {/* Password Strength Indicator */}
+                {password && (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4].map((level) => (
+                        <div
+                          key={level}
+                          className={`h-1 flex-1 rounded-full transition-all ${
+                            level <= passwordStrength.strength
+                              ? passwordStrength.color
+                              : 'bg-bg-elevated'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {passwordStrength.label && (
+                      <p className="text-xs text-text-muted font-mono">
+                        Strength: <span className="text-text-secondary ml-1">{passwordStrength.label}</span>
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -124,6 +164,9 @@ export default function RegisterPage() {
                     placeholder="Confirm your password"
                     disabled={status === 'loading'}
                   />
+                  {confirmPassword && password === confirmPassword && (
+                    <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-success" />
+                  )}
                 </div>
               </div>
 

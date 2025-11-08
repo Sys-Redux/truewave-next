@@ -1,6 +1,6 @@
 'use client';
 
-import { ShoppingCart, Home as HomeIcon, Sun, Moon, User, LogOut, Settings, Package } from 'lucide-react';
+import { ShoppingCart, Home as HomeIcon, Sun, Moon, User, LogOut, Settings, Package, Receipt } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -67,6 +67,8 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-50 border-b border-border backdrop-blur-lg bg-bg-primary bg-opacity-95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Logo */}
         <div className="flex items-center justify-between h-16">
           <button onClick={() => router.push('/')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="relative">
@@ -82,18 +84,27 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
           </button>
 
           <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className='flex items-center justify-center bg-bg-elevated w-10 h-10 hover:bg-bg-hover border border-border rounded-lg hover:border-accent transition-all duration-200'>
+            <button
+              onClick={toggleTheme}
+              className='flex items-center justify-center bg-bg-elevated w-10 h-10 hover:bg-bg-hover border
+                border-border rounded-lg hover:border-accent transition-all duration-200'>
               {theme === 'light' ? <Moon className='w-5 h-5 text-text-secondary' /> : <Sun className='w-5 h-5 text-accent' />}
             </button>
 
             {(isCartPage || isProfilePage) && (
-              <button onClick={() => router.push('/')} className="flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border border-border hover:border-accent px-4 py-2 rounded-lg transition-all duration-200 group">
+              <button
+                onClick={() => router.push('/')}
+                className="flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border border-border
+                  hover:border-accent px-4 py-2 rounded-lg transition-all duration-200 group">
                 <HomeIcon className="w-5 h-5 text-text-secondary group-hover:text-accent transition-colors" />
                 <span className="text-text-primary font-medium hidden lg:inline">Continue Shopping</span>
               </button>
             )}
 
-            <button onClick={onCartClick} className={`relative flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border px-4 py-2 rounded-lg transition-all duration-200 group ${isCartPage ? 'border-accent shadow-cyan' : 'border-border hover:border-accent'}`}>
+            <button
+              onClick={onCartClick}
+              className={`relative flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border px-4 py-2 rounded-lg transition-all
+                duration-200 group ${isCartPage ? 'border-accent shadow-cyan' : 'border-border hover:border-accent'}`}>
               <ShoppingCart className={`w-5 h-5 transition-colors ${isCartPage ? 'text-accent' : 'text-text-secondary group-hover:text-accent'}`} />
               <span className="text-text-primary font-medium hidden sm:inline">Cart</span>
               {cartItemCount > 0 && (
@@ -105,7 +116,10 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
 
             {user ? (
               <div className="relative" ref={dropdownRef}>
-                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className={`flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border px-4 py-2 rounded-lg transition-all duration-200 ${isDropdownOpen || isProfilePage ? 'border-accent shadow-cyan' : 'border-border hover:border-accent'}`}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className={`flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border px-4 py-2 rounded-lg transition-all
+                    duration-200 ${isDropdownOpen || isProfilePage ? 'border-accent shadow-cyan' : 'border-border hover:border-accent'}`}>
                   {user.photoURL ? (
                     <div className="relative w-6 h-6 rounded-full border border-accent overflow-hidden">
                       <Image src={user.photoURL} alt={user.displayName || 'User'} fill className="object-cover" sizes="24px" />
@@ -121,7 +135,8 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-bg-secondary border-2 border-border rounded-xl shadow-2xl overflow-hidden z-50">
+                  <div className="absolute right-0 mt-2 w-64 bg-bg-secondary border-2 border-border rounded-xl
+                    shadow-2xl overflow-hidden z-50">
                     <div className="p-4 border-b border-border bg-bg-elevated">
                       <div className="flex items-center gap-3">
                         {user.photoURL ? (
@@ -145,8 +160,11 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
                     </div>
 
                     <div className="py-2">
-                      <button onClick={() => { setIsDropdownOpen(false); router.push('/profile'); }} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-bg-elevated transition-colors group text-left">
-                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                      <button
+                        onClick={() => { setIsDropdownOpen(false); router.push('/profile'); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-bg-elevated transition-colors group text-left">
+                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center
+                          group-hover:bg-accent/20 transition-colors">
                           <Settings className="w-5 h-5 text-accent" />
                         </div>
                         <div>
@@ -154,10 +172,25 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
                           <p className="text-text-muted text-xs">Manage your account settings</p>
                         </div>
                       </button>
-
+                      <button
+                        onClick={() => { setIsDropdownOpen(false); router.push('/orders'); }}
+                        className='w-full flex items-center gap-3 px-4 py-3 hover:bg-bg-elevated transition-colors
+                          group text-left'>
+                          <div className='w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center
+                            group-hover:bg-accent/20 transition-colors'>
+                            <Receipt className='w-5 h-5 text-accent' />
+                          </div>
+                          <div>
+                            <p className='text-text-primary font-medium group-hover:text-accent transition-colors'>My Orders</p>
+                            <p className='text-text-muted text-xs'>View your order history</p>
+                          </div>
+                          </button>
                       {user.isAdmin && (
-                        <button onClick={() => { setIsDropdownOpen(false); router.push('/admin'); }} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-bg-elevated transition-colors group text-left">
-                          <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                        <button
+                          onClick={() => { setIsDropdownOpen(false); router.push('/admin'); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-bg-elevated transition-colors group text-left">
+                          <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center
+                            group-hover:bg-accent/20 transition-colors">
                             <Package className="w-5 h-5 text-accent" />
                           </div>
                           <div>
@@ -169,8 +202,11 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
 
                       <div className="my-2 border-t border-border" />
 
-                      <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-error/10 transition-colors group text-left">
-                        <div className="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center group-hover:bg-error/20 transition-colors">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-error/10 transition-colors group text-left">
+                        <div className="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center
+                          group-hover:bg-error/20 transition-colors">
                           <LogOut className="w-5 h-5 text-error" />
                         </div>
                         <div>
@@ -185,12 +221,18 @@ export const Header = ({ cartItemCount, onCartClick }: HeaderProps) => {
             ) : (
               !isAuthPage && (
                 <>
-                  <button onClick={() => router.push('/login')} className="flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border border-border hover:border-accent px-4 py-2 rounded-lg transition-all duration-200 group">
+                  <button
+                    onClick={() => router.push('/login')}
+                    className="flex items-center gap-2 bg-bg-elevated hover:bg-bg-hover border border-border
+                      hover:border-accent px-4 py-2 rounded-lg transition-all duration-200 group">
                     <User className="w-5 h-5 text-text-secondary group-hover:text-accent transition-colors" />
                     <span className="text-text-primary font-medium hidden sm:inline">Login</span>
                   </button>
 
-                  <button onClick={() => router.push('/register')} className="flex items-center gap-2 bg-gradient-cyber text-bg-primary px-4 py-2 rounded-lg hover:shadow-cyan transition-all duration-200 font-bold">
+                  <button
+                    onClick={() => router.push('/register')}
+                    className="flex items-center gap-2 bg-gradient-cyber text-bg-primary px-4 py-2 rounded-lg
+                      hover:shadow-cyan transition-all duration-200 font-bold">
                     <span className="hidden sm:inline">Sign Up</span>
                   </button>
                 </>

@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/hooks/store';
 import { selectCurrentUser, selectAuthStatus } from '@/lib/store/authSlice';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Package, ShoppingBag } from 'lucide-react';
 import { AdminPanel } from '@/components/admin/AdminPanel';
+import { OrderManagement } from '@/components/admin/OrderManagement';
+
+type TabType = 'products' | 'orders';
 
 export default function AdminPage() {
   const router = useRouter();
   const user = useAppSelector(selectCurrentUser);
   const status = useAppSelector(selectAuthStatus);
+  const [activeTab, setActiveTab] = useState<TabType>('products');
 
   useEffect(() => {
     if (status === 'idle') {
@@ -47,6 +51,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-text-primary mb-2">
             <span className="text-gradient-cyber">Admin Panel</span>
@@ -54,8 +59,37 @@ export default function AdminPage() {
           <p className="text-text-muted font-mono">{'// Manage products and orders'}</p>
         </div>
 
-        <AdminPanel />
+        {/* Tab Navigation */}
+        <div className='flex gap-4 mb-8 border-b border-border'>
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`flex items-center gap-2 px-6 py-3 font-medium transition-all
+              duration-200 border-b-2 ${
+              activeTab === 'products'
+                ? 'border-accent text-accent'
+                : 'border-transparent text-text-muted hover:text-text-primary'
+              }`}
+          >
+            <Package className='w-5 h-5' />
+            Product Management
+          </button>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`flex items-center gap-2 px-6 py-3 font-medium transition-all
+              duration-200 border-b-2 ${
+              activeTab === 'orders'
+                ? 'border-accent text-accent'
+                : 'border-transparent text-text-muted hover:text-text-primary'
+              }`}
+          >
+            <ShoppingBag className='w-5 h-5' />
+            Order Management
+          </button>
+        </div>
+
+        {activeTab === 'products' && <AdminPanel />}
+        {activeTab === 'orders' && <OrderManagement />}
       </div>
     </div>
   );
-}
+};
