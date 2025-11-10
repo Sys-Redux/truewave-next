@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Package, Calendar, DollarSign, User, Mail } from 'lucide-react';
 import Image from 'next/image';
 import { useAppSelector } from '@/hooks/store';
@@ -11,9 +11,13 @@ import { formatDate } from '@/lib/utils/dateHelpers';
 export default function OrderDetailsPage() {
     const params = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const user = useAppSelector(selectCurrentUser);
     const orderId = params.orderId as string;
     const { data: order, isLoading, error } = useOrder(orderId);
+
+    // Check if user came from admin/order management page
+    const fromAdmin = searchParams.get('from') === 'admin';
 
     // Redirect if not Logged In
     if (!user) {
@@ -62,12 +66,18 @@ export default function OrderDetailsPage() {
             <div className='max-w-4xl mx-auto'>
                 {/* Back Button */}
                 <button
-                    onClick={() => router.push('/orders')}
+                    onClick={() => {
+                        if (fromAdmin) {
+                            router.push('/admin');
+                        } else {
+                            router.push('/orders');
+                        }
+                    }}
                     className='flex items-center gap-2 text-text-muted hover:text-accent
                         transition-colors mb-6'
                 >
                     <ArrowLeft className='w-5 h-5' />
-                    Back to Orders
+                    {fromAdmin ? 'Back to Order Management' : 'Back to Orders'}
                 </button>
 
                 {/* Header */}

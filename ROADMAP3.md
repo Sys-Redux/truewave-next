@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+
 # TrueWave - Phase 2 Development Roadmap
 
 Congratulations on completing Phase 1! 🎉 Your e-commerce platform now has a solid foundation with authentication, product management, and order processing. This roadmap outlines exciting new features to take TrueWave to the next level.

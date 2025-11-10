@@ -75,7 +75,7 @@ export const ProductForm = ({ productId, onClose }: ProductFormProps) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'price' ? parseFloat(value) : value,
+            [name]: name === 'price' ? (value === '' ? 0 : parseFloat(value)) : value,
         }));
     };
 
@@ -276,6 +276,7 @@ export const ProductForm = ({ productId, onClose }: ProductFormProps) => {
                         <input
                             type='text'
                             id='title'
+                            name='title'
                             value={formData.title}
                             onChange={handleInputChange}
                             className='w-full px-4 py-3 bg-bg-primary border border-border rounded-lg

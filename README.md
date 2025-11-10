@@ -1,97 +1,146 @@
 <!-- markdownlint-disable -->
 
-# TrueWave - Cyber E-Commerce Store
+# TrueWave - Cyberpunk E-Commerce Platform
 
-A full-stack e-commerce platform with a slick cyberpunk aesthetic. I built this to learn modern web development with Firebase, starting with React + Vite, then migrating everything to Next.js 16 to level up the architecture.
+A full-stack e-commerce application with a custom cyberpunk theme that I built to demonstrate modern web development practices. This project started as a React + Vite application but I migrated it to **Next.js 16** to leverage the latest features and create a production-ready architecture.
 
-## 🚀 Why I Switched to Next.js
+<div align="center">
+  <img src="./public/screenshots/home-products.png" alt="TrueWave Home Page - Dark Theme" width="49%" />
+  <img src="./public/screenshots/home-products-light.png" alt="TrueWave Home Page - Light Theme" width="49%" />
+  <p><em>Homepage with dark theme (left) and light theme (right)</em></p>
+</div>
 
-Originally built with React and Vite (which was great for quick development), I migrated to Next.js because I wanted to learn production-grade patterns and get better performance. The switch gave me:
+## 🎯 Why This Project Exists
 
-- **App Router** - File-based routing is so much cleaner than React Router
-- **Server Components** - Better performance and smaller client bundles
-- **Image Optimization** - Automatic image optimization with the `next/image` component
-- **Better SEO** - Server-side rendering capabilities for product pages
-- **Production Ready** - Built-in optimizations and easy Vercel deployment
+I wanted to build something that showcases real-world e-commerce functionality while learning industry-standard tools and patterns. The project evolved from a simple React app into a fully-featured platform with authentication, role-based access control, cart persistence, and a custom theming system.
 
-The migration was challenging but worth it - I kept all the features working while making the app faster and more scalable.
+## 🚀 The Next.js Migration
+
+One of my biggest wins was migrating from React + Vite to **Next.js 16 with the App Router**. This wasn't just a framework switch—it was a complete architectural upgrade:
+
+- **App Router & File-Based Routing** - Replaced React Router with Next.js's intuitive file structure
+- **Server Components** - Leveraged RSCs for better performance and smaller client bundles
+- **Built-in Image Optimization** - Configured `next/image` with Firebase Storage remote patterns
+- **Production Optimizations** - Automatic code splitting, route prefetching, and SEO improvements
+- **TypeScript Throughout** - Maintained full type safety during the entire migration
+
+The migration taught me how to think about server vs client components, handle hydration edge cases, and optimize for production deployment on Vercel.
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Next.js 16.0.1** - React framework with App Router
-- **React 19.2.0** - UI library with latest features
-- **TypeScript** - Type safety and better developer experience
-- **Tailwind CSS v4** - Utility-first CSS with custom cyber theme
-- **Lucide React** - Beautiful icon library
+- **Next.js 16.0.1** - React framework with App Router and server components
+- **React 19.2.0** - Latest React with concurrent features
+- **TypeScript 5** - Full type safety across the application
+- **Tailwind CSS v4** - Custom cyberpunk theme with design tokens
+- **Lucide React** - Modern icon library
 
-### State Management & Data Fetching
-- **Redux Toolkit 2.10.1** - Global state management (auth, cart)
-- **TanStack React Query 5.90.7** - Server state management and caching
+### State Management
+- **Redux Toolkit 2.10.1** - Global state for auth and cart with custom sync middleware
+- **TanStack React Query 5.90.7** - Server state with caching and background refetching
 - **React Hot Toast** - Toast notifications
 
-### Backend & Database
+### Backend & Cloud
 - **Firebase 12.5.0**
-  - Authentication - User management and auth flows
-  - Firestore - NoSQL database for products, orders, users
-  - Cloud Storage - Image hosting for product photos
+  - **Authentication** - Email/password auth and profile management
+  - **Cloud Firestore** - NoSQL database for products, orders, and users
+  - **Cloud Storage** - Image hosting organized by category
+  - **Cloud Functions** - Serverless triggers for automated data cleanup
 
 ### Development Tools
-- **ESLint** - Code linting and quality
-- **pnpm** - Fast, efficient package manager
+- **ESLint 9** - Code quality and consistency
+- **pnpm** - Fast, disk-efficient package manager
 
-## ✨ What It Does
+## ✨ Features & Functionality
 
-### For Customers
-- 🔐 **User Accounts** - Register, login, and manage your profile with Firebase Auth
-- 🛒 **Shopping Cart** - Add products, adjust quantities, persistent cart (survives refresh)
-- 🎨 **Dark/Light Theme** - Toggle between themes with localStorage persistence
-- 👤 **Profile Management** - Update display name, photo URL, and view order history
-- 🔍 **Browse Products** - Filter by category, view detailed product pages
-- 💳 **Checkout & Orders** - Place orders, view order history, track order details
-- 📦 **Order History** - See all past purchases with full order details
+### Customer Experience
+- **Authentication System** - Complete email/password registration and login flows with Firebase Auth
+- **Shopping Cart** - Add/remove products, adjust quantities, cart persists across sessions
+- **Dynamic Theme Switching** - Custom dark/light mode toggle with localStorage persistence
+- **Profile Management** - Update display name, photo URL, and view complete order history
+- **Product Browsing** - Filter by categories (electronics, clothing, home, sports, books, toys)
+- **Order System** - Checkout flow with tax calculation, order placement, and order tracking
+- **Responsive Design** - Fully mobile-friendly with Tailwind breakpoints
 
-### For Admins
-- 📊 **Admin Dashboard** - Tabbed interface for products and orders
-- 📦 **Product Management** - Create, edit, and delete products with full CRUD operations
-- 🖼️ **Image Upload** - Upload product images to Firebase Storage with progress bars
-- � **Order Management** - View all orders, metrics (total revenue, avg order value, pending orders)
-- 🎯 **Protected Routes** - Admin-only access with permission checks
+### Admin Dashboard
+- **Product Management** - Full CRUD operations for the product catalog
+- **Image Upload System** - Direct uploads to Firebase Storage with progress tracking
+- **Order Management** - View all customer orders with revenue metrics and status updates
+- **Role-Based Access** - Admin-only routes with Firestore-based permission checks
+- **Tabbed Interface** - Clean navigation between products and orders management
+
+<div align="center">
+  <img src="./public/screenshots/admin-products.png" alt="Admin Product Management" width="49%" />
+  <img src="./public/screenshots/admin-orders.png" alt="Admin Order Management" width="49%" />
+  <p><em>Admin Dashboard: Product Management (left) and Order Management (right)</em></p>
+
+  <img src="./public/screenshots/admin-light.png" alt="Admin Dashboard - Light Theme" width="70%" />
+  <p><em>Admin Dashboard in light theme showcasing theme flexibility</em></p>
+</div>
 
 ### Technical Highlights
-- ⚡ **Next.js Image Optimization** - All images use `next/image` with Firebase Storage remote patterns
-- 🔄 **Smart Data Fetching** - TanStack React Query for server state with automatic caching
-- 💾 **Persistent State** - Redux Toolkit for cart and auth, synced to sessionStorage
-- 🎭 **Great UX** - Loading states, error handling, toast notifications
-- 📱 **Fully Responsive** - Mobile-first design with Tailwind CSS
-- 🚀 **React 19 Ready** - Fixed all strict mode warnings with proper setState patterns
+- **Cloud Functions** - Automated user/cart cleanup with Firestore triggers and batched writes
+- **Cart Sync Middleware** - Custom Redux middleware keeps cart synced with Firestore
+- **Optimized Images** - Next.js Image with Firebase Storage remote patterns
+- **Smart Caching** - React Query handles server state with background refetching
+- **Type Safety** - Full TypeScript coverage with custom interfaces
 
-## 🏗️ How It's Organized
+## 🏗️ Project Architecture
 
 ```
 my-app/
-├── app/                          # Next.js 16 App Router
-│   ├── admin/                   # Admin dashboard with product & order tabs
-│   ├── cart/                    # Shopping cart page
-│   ├── login/ & register/      # Auth pages
-│   ├── orders/                  # Order history & details
-│   │   └── [orderId]/          # Dynamic route for order details
-│   ├── profile/                 # User profile management
-│   ├── layout.tsx              # Root layout with Redux & React Query providers
-│   └── page.tsx                # Homepage with product grid
+├── app/                              # Next.js App Router (file-based routing)
+│   ├── admin/                        # Protected admin dashboard
+│   ├── cart/                         # Shopping cart view
+│   ├── login/ & register/           # Authentication pages
+│   ├── orders/                       # Order history
+│   │   └── [orderId]/               # Dynamic route for order details
+│   ├── profile/                      # User profile management
+│   ├── layout.tsx                    # Root layout (providers, metadata)
+│   ├── page.tsx                      # Homepage with product grid
+│   └── globals.css                   # Tailwind v4 with custom theme tokens
 ├── components/
-│   ├── admin/                   # AdminPanel, OrderManagement, ProductForm
-│   ├── cart/                    # ShoppingCart component
-│   ├── layout/                  # Header with dropdown menu
-│   └── products/               # ProductList, ProductCard, CategoryFilter
+│   ├── admin/                        # Admin-only components
+│   │   ├── AdminPanel.tsx           # Tabbed interface
+│   │   ├── ProductForm.tsx          # Product CRUD
+│   │   └── OrderManagement.tsx      # Order dashboard
+│   ├── cart/
+│   │   ├── ShoppingCart.tsx         # Cart display & checkout
+│   │   └── CartItem.tsx             # Individual cart item
+│   ├── layout/
+│   │   ├── Header.tsx               # Navigation with user dropdown
+│   │   └── ClientLayout.tsx         # Client-side layout wrapper
+│   └── products/
+│       ├── ProductList.tsx          # Product grid
+│       ├── ProductCard.tsx          # Product display
+│       └── CategoryFilter.tsx       # Category filtering
 ├── lib/
-│   ├── firebase/               # Firebase config (auth, db, storage)
-│   ├── services/               # Firestore & Storage service functions
-│   ├── store/                  # Redux slices (auth, cart)
-│   └── utils/                  # Helper functions (toasts, date formatting)
-├── hooks/                       # Custom React Query hooks (useProducts, useOrders)
-├── types/                       # TypeScript definitions (User, Product, Order)
-└── public/                      # Static assets (favicon, images)
+│   ├── firebase.ts                   # Firebase initialization
+│   ├── services/                     # Service layer pattern
+│   │   ├── authService.ts           # Auth operations
+│   │   ├── firestoreService.ts      # Database operations
+│   │   └── storageService.ts        # File upload/download
+│   ├── store/                        # Redux Toolkit
+│   │   ├── store.ts                 # Store configuration
+│   │   ├── authSlice.ts             # Auth state management
+│   │   ├── cartSlice.ts             # Cart state management
+│   │   └── cartSyncMiddleware.ts    # Firestore sync middleware
+│   └── utils/
+│       ├── toasts.ts                # Toast notification helpers
+│       ├── storage.ts               # LocalStorage/SessionStorage helpers
+│       └── dateHelpers.ts           # Date formatting utilities
+├── hooks/                            # Custom React hooks
+│   ├── store.ts                      # Typed Redux hooks
+│   ├── useProducts.ts               # React Query product hooks
+│   └── useOrders.ts                 # React Query order hooks
+├── types/                            # TypeScript type definitions
+│   ├── product.ts                   # Product interface
+│   ├── order.ts                     # Order & OrderItem interfaces
+│   └── user.ts                      # User interface
+├── functions/                        # Firebase Cloud Functions
+│   └── src/
+│       └── index.ts                 # User cleanup & cart management functions
+└── public/                           # Static assets
 ```
 
 ## 🚦 Getting Started
@@ -131,154 +180,179 @@ pnpm dev
 
 5. Open [http://localhost:3000](http://localhost:3000)
 
-## 🎨 Design & Styling
+## 🎨 Custom Cyberpunk Theme
 
-I went with a **cyberpunk theme** because I wanted something that looked cool and modern:
-- Custom gradient utilities (`bg-gradient-cyber`, `shadow-cyan`) in Tailwind config
-- Cyan accent colors with glow effects for that neon vibe
-- Dark mode with card-based elevated surfaces
-- Smooth transitions and hover effects everywhere
-- Light/dark theme toggle that persists in localStorage
-- Mobile-first responsive design
+Built using Tailwind CSS v4's design token system:
 
-## 🔥 Firebase Backend
+- **CSS Variables** - Semantic color tokens in `globals.css` with `@theme` directive
+- **Dual Themes** - Dark/light modes with localStorage persistence
+- **Custom Utilities** - Gradient backgrounds (`bg-gradient-cyber`) and glow effects (`shadow-cyan`)
+- **Color Palette** - Cyan (#06b6d4), purple (#a855f7), pink (#ec4899) accents
+- **Layered Design** - Gradients and textures for depth
 
-I'm using Firebase for everything backend-related:
+## 🔥 Firebase Backend Architecture
 
-### Firestore Collections
-- **`products`** - Product catalog (title, price, description, category, imageURL, rating)
-- **`users`** - User profiles (uid, email, displayName, photoURL, isAdmin flag)
-- **`orders`** - Order records (userId, items, totalAmount, status, timestamps)
+### Firestore Database Schema
+I designed a NoSQL schema optimized for real-time queries:
 
-### Firebase Storage
-Product images are stored in Firebase Storage organized by category:
-```
-products/
-  ├── electronics/
-  │   └── product123_1234567890.jpg
-  ├── clothing/
-  │   └── product456_9876543210.jpg
-```
-
-### Next.js Image Configuration
-Added Firebase Storage to `next.config.ts` remote patterns so Next.js can optimize images:
+**`products` Collection**
 ```typescript
-images: {
-  remotePatterns: [
-    { protocol: 'https', hostname: 'firebasestorage.googleapis.com' }
-  ]
+{
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  category: 'electronics' | 'clothing' | 'home' | 'sports' | 'books' | 'toys';
+  imageURL: string;
+  rating: number;
+  ratingCount: number;
+  stock: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 ```
 
-## � Migration Journey (React → Next.js)
+**`users` Collection**
+```typescript
+{
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+  isAdmin: boolean;
+  createdAt: Timestamp;
+}
+```
 
-Moving from React/Vite to Next.js was a learning experience. Here's what I did:
+**`orders` Collection**
+```typescript
+{
+  id: string;
+  userId: string;
+  userEmail: string;
+  items: OrderItem[];
+  totalAmount: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: Timestamp;
+}
+```
 
-### Architecture Decisions
-1. **State Management Split**
-   - Kept Redux Toolkit for client-side state (auth, cart) since it needs to persist
-   - Used TanStack React Query for server data (products, orders) - way better than useState + useEffect
+**`carts` Collection** (synced with Redux)
+```typescript
+{
+  userId: string;
+  items: CartItem[];
+  updatedAt: Timestamp;
+}
+```
 
-2. **Server vs Client Components**
-   - Added `'use client'` to components that use hooks, event handlers, or browser APIs
-   - Kept pages as client components since they need interactivity
-   - Could optimize further by extracting interactive parts into smaller client components
+### Firebase Storage Organization
+Product images are organized by category for efficient retrieval:
+```
+products/
+  ├── electronics/product123_timestamp.jpg
+  ├── clothing/product456_timestamp.jpg
+  ├── home/product789_timestamp.jpg
+  └── sports/product101_timestamp.jpg
+```
 
-3. **Image Optimization**
-   - Converted every `<img>` to Next.js `<Image>` component
-   - Configured Firebase Storage URLs in `next.config.ts` remote patterns
-   - Added proper `sizes` prop for responsive images
+### Cloud Functions (Serverless)
+Automated cleanup using Firebase Functions v2:
 
-4. **React 19 Compatibility**
-   - Fixed `setState` warnings by using lazy initializers: `useState(() => localStorage.getItem(...))`
-   - Wrapped state updates in `queueMicrotask()` where needed
+- **`onUserDeleted`** - Removes auth account, cart, and orders when user deleted
+- **`onProductDeleted`** - Removes deleted products from all carts
+- **`cleanupUserData`** - Callable function for manual cleanup
 
-5. **Routing**
-   - Migrated from React Router to Next.js App Router
-   - Dynamic routes for order details: `app/orders/[orderId]/page.tsx`
-   - Used `useRouter()` from `next/navigation` instead of `react-router-dom`
+Functions use batched writes (500 operations per batch) for efficiency.
 
-### What Worked Well
-- Redux and React Query play nicely with Next.js
-- Firebase integration stayed the same (no backend changes needed)
-- Tailwind CSS config transferred directly
-- TypeScript types remained unchanged
+## 🔄 React → Next.js 16 Migration
 
-### Challenges I Solved
-- Understanding when to use `'use client'` vs server components
-- Configuring Next.js Image for external Firebase URLs
-- Handling auth state on initial page load with Redux
-- Fixing hydration mismatches with localStorage
+Key changes during the migration:
+
+**State Management Strategy**
+- Kept Redux Toolkit for cart/auth (needs localStorage persistence)
+- Migrated to React Query for products/orders (eliminates manual `useEffect` patterns)
+- Built custom cart sync middleware to keep Redux and Firestore in sync
+
+**Component & Routing**
+- Learned `'use client'` vs server component boundaries
+- Replaced React Router with App Router's file-based routing
+- Implemented dynamic routes: `app/orders/[orderId]/page.tsx`
+
+**Image Optimization**
+- Converted all `<img>` to `<Image>` with Firebase Storage remote patterns
+- Significant performance boost with automatic WebP conversion
+
+**React 19 Compatibility**
+- Fixed strict mode warnings with lazy initializers
+- Solved hydration mismatches from localStorage reads during SSR
+
+## � Key Skills Demonstrated
+
+**Frontend & Architecture**
+- Next.js 16 App Router with server/client component patterns
+- React 19 with strict mode compliance and proper hook patterns
+- TypeScript type safety with custom interfaces and generics
+- Tailwind CSS v4 custom theme system with design tokens
+
+**State Management**
+- Redux Toolkit with custom cart sync middleware
+- React Query for server state with caching and background refetching
+- Service layer pattern separating UI from data access
+
+**Backend & Cloud**
+- Firebase Authentication with email/password flows
+- Cloud Firestore NoSQL schema design and queries
+- Firebase Storage with category-based organization
+- Cloud Functions with Firestore triggers and batched writes
+
+**Real-World Features**
+- E-commerce cart with session persistence
+- Admin dashboard with role-based access control
+- Image upload with progress tracking
+- Order management with checkout flow
+- Dynamic routing and category filtering
 
 ## 🚀 Deployment
 
-The app is ready for deployment on Vercel:
-
+**Vercel (Frontend)**
 ```bash
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
+pnpm run build && pnpm start  # Test locally
+# Deploy: Push to GitHub → Import in Vercel → Add env vars → Auto-deploy
 ```
 
-Or deploy directly to Vercel:
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-
-## 📚 What I Learned
-
-This project was a crash course in modern web development:
-
-### Technical Skills
-- **Next.js App Router** - File-based routing, layouts, and the Server/Client Component paradigm
-- **Firebase Integration** - Authentication, Firestore database operations, Cloud Storage
-- **State Management Architecture** - When to use Redux vs React Query vs useState
-- **TypeScript** - Type safety across the entire app, custom types for User, Product, Order
-- **Image Optimization** - Configuring remote patterns, responsive images with `sizes` prop
-- **React 19** - Handling strict mode warnings, proper useState patterns
-
-### Development Practices
-- **Component Architecture** - Breaking down UI into reusable components
-- **Service Layer Pattern** - Separating Firebase logic from components
-- **Custom Hooks** - Creating reusable hooks with React Query
-- **Error Handling** - Graceful error states with toast notifications
-- **Responsive Design** - Mobile-first approach with Tailwind breakpoints
-
-### Real-World E-Commerce Features
-- User authentication flows (register, login, password validation)
-- Shopping cart with quantity management and checkout
-- Admin dashboard with role-based access control
-- Image upload with progress tracking
-- Order management and history
-- Product CRUD operations with category filtering
-
-### Migration Experience
-- Refactoring an entire codebase from one framework to another
-- Maintaining feature parity while improving architecture
-- Debugging hydration issues and SSR quirks
-- Performance optimization with code splitting and lazy loading
+**Firebase (Cloud Functions)**
+```bash
+cd functions && pnpm run build
+firebase deploy --only functions
+```
 
 ## 🔮 Future Plans
 
-Check out [ROADMAP2.md](./ROADMAP2.md) for planned features like:
-- Product search and advanced filtering
-- Reviews and ratings system
 - Stripe payment integration
-- Email notifications
-- Wishlist functionality
-- Admin analytics dashboard
-- And more!
+- Full-text search with Algolia
+- Product reviews and ratings
+- Email notifications (SendGrid)
+- CI/CD pipeline with GitHub Actions
 
-## 🤝 Contributing
+See [ROADMAP2.md](./ROADMAP2.md) for details.
 
-This is a learning project, but if you spot bugs or have suggestions, feel free to open an issue!
+## 🎓 Takeaways
 
-## 📄 License
+This project taught me that building a real-world application involves much more than just writing code. It requires:
 
-MIT License - feel free to use this for your own projects and learning.
+- **Architecture Planning** - Making decisions about state management, data flow, and component structure
+- **Migration Skills** - Refactoring an entire codebase while maintaining functionality
+- **Problem Solving** - Debugging hydration issues, optimizing performance, handling edge cases
+- **User Experience** - Loading states, error handling, responsive design, and accessibility
+- **Production Mindset** - Security rules, environment variables, deployment strategies, and monitoring
+
+The jump from React to Next.js pushed me to understand server/client boundaries, SSR, and production optimizations. Working with Firebase taught me about NoSQL design, security rules, and serverless functions. Building the custom theming system deepened my CSS knowledge with Tailwind v4's new features.
+
+Most importantly, I learned how to research, debug, and persist through challenges when building something complex from scratch.
 
 ---
 
-**Made by me while learning Next.js, React, TypeScript, and Firebase** 🚀
+**Built with Next.js, TypeScript, Firebase, and a lot of coffee** ☕
 
-*P.S. - The cyberpunk theme was inspired by my love for neon lights and sci-fi aesthetics. Hope you enjoy using it as much as I enjoyed building it!*
+*The cyberpunk aesthetic was inspired by my love for sci-fi and neon-soaked cityscapes. If you're a recruiter or fellow developer, feel free to reach out!*

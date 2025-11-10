@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { makeStore } from '@/lib/store/store';
+import { store } from '@/lib/store/store';
 import { initializeAuthListener } from '@/lib/store/authSlice';
-import { initializeCart } from '@/lib/store/cartSlice';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,20 +17,18 @@ const queryClient = new QueryClient({
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [store] = useState(() => makeStore());
-
   useEffect(() => {
     // Initialize auth listener (listens to Firebase Auth changes)
-    const unsubscribe = initializeAuthListener(store.dispatch);
-
-    // Initialize cart from sessionStorage
-    store.dispatch(initializeCart());
+    // The auth listener handles loading the cart appropriately:
+    // - For logged-in users: loads cart from Firestore
+    // - For guests: keeps cart empty (or loads from sessionStorage if needed)
+    const unsubscribe = initializeAuthListener(store);
 
     // Cleanup: Unsubscribe from auth listener
     return () => {
       unsubscribe();
     };
-  }, [store]);
+  }, []);
 
   return (
     <Provider store={store}>

@@ -130,7 +130,7 @@ export const OrderManagement = () => {
                                 orders.map((order) => (
                                     <tr
                                         key={order.id}
-                                        onClick={() => router.push(`/orders/${order.id}`)}
+                                        onClick={() => router.push(`/orders/${order.id}?from=admin`)}
                                         className='hover:bg-bg-elevated cursor-pointer transition-colors'
                                     >
                                         <td className='px-6 py-4 whitespace-nowrap'>

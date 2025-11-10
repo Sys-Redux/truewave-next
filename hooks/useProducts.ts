@@ -29,10 +29,11 @@ export const useProductsByCategory = (category: string) => {
 };
 
 // Fetch Product by ID
-export const useProduct = (productId: string) => {
+export const useProduct = (productId: string | null) => {
     return useQuery({
         queryKey: ['products', productId],
-        queryFn: () => getProductById(productId),
+        queryFn: () => getProductById(productId!),
+        enabled: !!productId, // Only run query if productId exists
         staleTime: 5 * 60 * 1000,
     });
 };

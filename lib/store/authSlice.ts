@@ -4,6 +4,11 @@ import { auth } from '@/lib/firebase';
 import * as authService from '@/lib/services/authService';
 import type { AuthState, User, RegisterData, LoginData, ProfileUpdateData } from '@/types/user';
 import type { RootState, AppDispatch } from '@/lib/store/store';
+import {
+    loadCartFromFirestoreThunk,
+    mergeGuestCartWithUserCartThunk,
+    clearCart,
+} from '@/lib/store/cartSlice';
 
 const initialState: AuthState = {
     user: null,
@@ -45,9 +50,10 @@ export const login = createAsyncThunk<User, LoginData>(
 // Logout Current User
 export const logout = createAsyncThunk<void, void>(
     'auth/logout',
-    async (_, { rejectWithValue }) => {
+    async (_, { rejectWithValue, dispatch }) => {
         try {
             await authService.logoutUser();
+            dispatch(clearCart());
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Logout failed';
             return rejectWithValue(message);
@@ -180,21 +186,38 @@ export const selectAuthInitialized = (state: RootState) => state.auth.initialize
 // ==================================================================================
 
 // KEY FUNCTION: Call this once on app startup to listen for auth state changes
-export const initializeAuthListener = (dispatch: AppDispatch): (() => void) => {
+export const initializeAuthListener = (storeInstance: { dispatch: AppDispatch; getState: () => RootState }): (() => void) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
             try {
                 // Fetch user data from Firestore (includes isAdmin)
                 const user = await authService.mapFirebaseUser(firebaseUser);
-                dispatch(setUser(user));
+                storeInstance.dispatch(setUser(user));
+
+                // Load user's cart from Firestore
+                // First Get Current Cart Items (Might be guest cart)
+                const state = storeInstance.getState();
+                const guestItems = state.cart.items;
+
+                if (guestItems.length > 0) {
+                    // Merge guest cart with user cart in Firestore
+                    await storeInstance.dispatch(mergeGuestCartWithUserCartThunk({
+                        userId: firebaseUser.uid,
+                        guestItems,
+                    }));
+                } else {
+                    // Just load user cart from Firestore
+                    await storeInstance.dispatch(loadCartFromFirestoreThunk(firebaseUser.uid));
+                }
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 // Fallback to basic user data if Firestore fails
                 const basicUser = authService.mapFirebaseUserSync(firebaseUser, false);
-                dispatch(setUser(basicUser));
+                storeInstance.dispatch(setUser(basicUser));
             }
         } else {
-            dispatch(setUser(null));
+            storeInstance.dispatch(setUser(null));
+            storeInstance.dispatch(clearCart());
         }
     });
 

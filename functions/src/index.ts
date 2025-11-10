@@ -22,6 +22,14 @@ export const onUserDeleted = onDocumentDeleted(
         console.log(`Auth user already deleted or not found: ${uid}`, authError);
       }
 
+      // Delete User's Shopping Cart
+      try {
+        await db.collection('carts').doc(uid).delete();
+        console.log(`Deleted shopping cart for user: ${uid}`);
+      } catch (cartError: unknown) {
+        console.log(`Shopping cart already deleted or not found for user: ${uid}`, cartError);
+      }
+
       // Find All Orders Belonging to This User
       const ordersSnapshot = await db
         .collection('orders')
@@ -118,6 +126,13 @@ export const cleanupUserData = onCall(async (request) => {
       console.log(`Auth user already deleted: ${targetUid}`);
     }
 
+    // Delete user cart
+    try {
+      await db.collection('carts').doc(targetUid).delete();
+    } catch (cartError) {
+      console.log(`Cart already deleted or not found for user: ${targetUid}`);
+    }
+
     // Delete all user orders
     const ordersSnapshot = await db
       .collection('orders')
@@ -134,9 +149,79 @@ export const cleanupUserData = onCall(async (request) => {
       success: true,
       message: `Cleaned up data for user ${targetUid}`,
       ordersDeleted: ordersSnapshot.size,
+      cartsDeleted: true,
     };
   } catch (error) {
     console.error('Cleanup error:', error);
     throw new HttpsError('internal', 'Failed to cleanup user data');
   }
 });
+
+export const onProductDeleted = onDocumentDeleted(
+  'products/{productId}',
+  async (event) => {
+    const productId = event.params.productId;
+    console.log(`Product deleted: ${productId}. Cleaning up carts...`);
+
+    const db = admin.firestore();
+
+    try {
+      // Get all cart documents
+      const cartsSnapshot = await db.collection('carts').get();
+
+      if (cartsSnapshot.empty) {
+        console.log('No carts found in the database');
+        return;
+      }
+
+      let cartsUpdated = 0;
+      let itemsRemoved = 0;
+
+      // Process each cart
+      for (const cartDoc of cartsSnapshot.docs) {
+        const cartData = cartDoc.data();
+        const items = cartData.items || [];
+
+        // Filter out the deleted product
+        const originalLength = items.length;
+        const updatedItems = items.filter(
+          (item: { product: { id: string }; quantity: number }) =>
+            item.product.id !== productId
+        );
+
+        // Only update if items were removed
+        if (updatedItems.length < originalLength) {
+          const removedCount = originalLength - updatedItems.length;
+          itemsRemoved += removedCount;
+          cartsUpdated++;
+
+          if (updatedItems.length === 0) {
+            // Cart is empty after removal - delete the cart document
+            await cartDoc.ref.delete();
+            console.log(`✅ Deleted empty cart for user: ${cartDoc.id}`);
+          } else {
+            // Update cart with filtered items
+            await cartDoc.ref.update({
+              items: updatedItems,
+              updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            console.log(
+              `✅ Removed ${removedCount} item(s) from cart: ${cartDoc.id}`
+            );
+          }
+        }
+      }
+
+      if (cartsUpdated > 0) {
+        console.log(
+          `✅ Product cleanup complete. Updated ${cartsUpdated} cart(s), removed ${itemsRemoved} item(s)`
+        );
+      } else {
+        console.log('ℹ️  Product was not in any carts');
+      }
+    } catch (error) {
+      console.error(`❌ Error cleaning up carts for product ${productId}:`, error);
+      // Don't throw - we don't want to prevent the product deletion
+    }
+  }
+);

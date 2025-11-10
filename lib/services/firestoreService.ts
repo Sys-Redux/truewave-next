@@ -16,10 +16,12 @@ import {
 import { db } from '@/lib/firebase';
 import type { Product, ProductFormData } from '@/types/product';
 import type { Order, CreateOrderData } from '@/types/order';
+import type { CartItem } from '@/lib/utils/storage'
 
 // Collection reference
 const productsCollection = collection(db, 'products');
 const ordersCollection = collection(db, 'orders');
+const cartsCollection = collection(db, 'carts');
 
 // Convert Firestore Timestamp to ISO string for serialization
 const convertTimestamps = <T extends Record<string, unknown>>(data: T): T => {
@@ -133,8 +135,16 @@ export const getProductById = async (productId: string): Promise<Product | null>
 // Add New Product
 export const createProduct = async (productData: ProductFormData): Promise<string> => {
     try {
+        // Filter out empty strings to avoid Firestore validation errors
+        const cleanedData: Record<string, unknown> = {};
+        Object.entries(productData).forEach(([key, value]) => {
+            if (value !== '' && value !== null && value !== undefined) {
+                cleanedData[key] = value;
+            }
+        });
+
         const docRef = await addDoc(productsCollection, {
-            ...productData,
+            ...cleanedData,
             rating: 0,
             ratingCount: 0,
             createdAt: serverTimestamp(),
@@ -153,9 +163,17 @@ export const updateProduct = async (
     productData: Partial<ProductFormData>
 ): Promise<void> => {
     try {
+        // Filter out empty strings to avoid Firestore validation errors
+        const cleanedData: Record<string, unknown> = {};
+        Object.entries(productData).forEach(([key, value]) => {
+            if (value !== '' && value !== null && value !== undefined) {
+                cleanedData[key] = value;
+            }
+        });
+
         const docRef = doc(db, 'products', productId);
         await updateDoc(docRef, {
-            ...productData,
+            ...cleanedData,
             updatedAt: serverTimestamp(),
         });
     } catch (error) {
@@ -325,5 +343,105 @@ export const setUserAdminStatus = async (uid: string, isAdmin: boolean): Promise
     } catch (error) {
         console.error('Error setting admin status:', error);
         throw new Error('Failed to set admin status');
+    }
+};
+
+// ======================================================================================
+// Cart Service Functions
+// ======================================================================================
+
+export const saveCartToFirestore = async (
+    userId: string,
+    items: CartItem[]
+): Promise<void> => {
+    try {
+        const cartDocRef = doc(cartsCollection, userId);
+
+        // If Cart is Empty, Delete the Document
+        if (items.length === 0) {
+            await deleteDoc(cartDocRef);
+            return;
+        }
+
+        // Save or Update Cart Document
+        await setDoc(cartDocRef, {
+            userId,
+            items,
+            updatedAt: serverTimestamp(),
+        });
+    } catch (error) {
+        console.error('Error saving cart to Firestore:', error);
+        throw new Error('Failed to save cart to Firestore');
+    }
+};
+
+export const loadCartFromFirestore = async (
+    userId: string
+): Promise<CartItem[]> => {
+    try {
+        const cartDocRef = doc(cartsCollection, userId);
+        const cartSnap = await getDoc(cartDocRef);
+
+        if (cartSnap.exists()) {
+            const data = cartSnap.data();
+            return data.items as CartItem[] || [];
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error loading cart from Firestore:', error);
+        return [];
+    }
+};
+
+export const clearCartFromFirestore = async (
+    userId: string
+): Promise<void> => {
+    try {
+        const cartDocRef = doc(cartsCollection, userId);
+        await deleteDoc(cartDocRef);
+    } catch (error) {
+        console.error('Error clearing cart from Firestore:', error);
+        throw new Error('Failed to clear cart from Firestore');
+    }
+};
+
+export const mergeGuestCartWithUserCart = async (
+    userId: string,
+    guestItems: CartItem[]
+): Promise<CartItem[]> => {
+    try {
+        // Load User's Existing Cart from Firestore
+        const userCart = await loadCartFromFirestore(userId);
+
+        if (guestItems.length === 0) {
+            return userCart;
+        }
+
+        if (userCart.length === 0) {
+            await saveCartToFirestore(userId, guestItems);
+            return guestItems;
+        }
+
+        // Merge Logic: Combine Quantities for Duplicate Products
+        const mergedCart = [...userCart];
+        guestItems.forEach((guestItem) => {
+            const existingItem = mergedCart.find(
+                (item) => item.product.id === guestItem.product.id
+            );
+
+            if (existingItem) {
+                existingItem.quantity += guestItem.quantity;
+            } else {
+                mergedCart.push(guestItem);
+            }
+        });
+
+        await saveCartToFirestore(userId, mergedCart);
+        return mergedCart;
+    } catch (error) {
+        console.error('Error merging guest cart with user cart:', error);
+        // Fallback: Return Guest Cart if Merge Fails
+        return guestItems;
     }
 };

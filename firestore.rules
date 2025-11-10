@@ -1,0 +1,112 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================================
+    // Helper Functions
+    // ============================================================================
+
+    // Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Check if user is the owner of a document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Check if user is an admin
+    function isAdmin() {
+      return isSignedIn() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // Check if the authenticated user matches the userId in the resource
+    function isResourceOwner() {
+      return isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    // ============================================================================
+    // Users Collection
+    // ============================================================================
+
+    match /users/{userId} {
+      // Allow users to read their own document
+      // Admins can read all user documents
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Allow users to create their own document during registration
+      // Prevent self-promotion to admin
+      allow create: if isOwner(userId) &&
+                       request.resource.data.uid == request.auth.uid &&
+                       request.resource.data.email == request.auth.token.email &&
+                       request.resource.data.isAdmin == false;
+
+      // Allow users to update their own document
+      // Cannot change uid, isAdmin, or createdAt fields
+      allow update: if isOwner(userId) &&
+                       request.resource.data.uid == resource.data.uid &&
+                       request.resource.data.isAdmin == resource.data.isAdmin &&
+                       request.resource.data.createdAt == resource.data.createdAt;
+
+      // Allow users to delete their own document
+      // This triggers the Cloud Function cascade delete
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================================================================
+    // Products Collection
+    // ============================================================================
+
+    match /products/{productId} {
+      // Anyone (including unauthenticated users) can read products
+      // This allows browsing the store without logging in
+      allow read: if true;
+
+      // Only admins can create, update, or delete products
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // Orders Collection
+    // ============================================================================
+
+    match /orders/{orderId} {
+      // Users can read their own orders
+      // Admins can read all orders
+      allow read: if isResourceOwner() || isAdmin();
+
+      // Users can create orders for themselves
+      // Ensure the userId in the order matches the authenticated user
+      allow create: if isSignedIn() &&
+                       request.resource.data.userId == request.auth.uid;
+
+      // Only admins can update orders (e.g., change order status)
+      // Users cannot modify their orders after creation
+      allow update: if isAdmin();
+
+      // Users can delete their own orders (e.g., cancel pending orders)
+      // Admins can delete any order
+      allow delete: if isResourceOwner() || isAdmin();
+    }
+
+    // ============================================================================
+    // Carts Collection
+    // ============================================================================
+
+    match /carts/{userId} {
+      // Users can only read and write their own cart
+      // The document ID must match the user's UID
+      allow read, write: if isOwner(userId);
+
+      // Additional validation for write operations
+      allow create, update: if isOwner(userId) &&
+                               request.resource.data.userId == request.auth.uid;
+
+      // Allow users to delete their own cart
+      allow delete: if isOwner(userId);
+    }
+  }
+}

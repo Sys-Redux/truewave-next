@@ -11,7 +11,7 @@ import {
     logout,
 } from '@/lib/store/authSlice';
 import { auth } from '@/lib/firebase';
-import { deleteUser } from 'firebase/auth';
+import { deleteUserDocument } from '@/lib/services/firestoreService';
 import { Toaster } from 'react-hot-toast';
 import { errorToast, successToast } from '@/lib/utils/toasts';
 
@@ -71,13 +71,17 @@ export const Profile = () => {
                 return;
             }
 
-            // Delete user from Firebase Auth
-            await deleteUser(currentUser);
+            const uid = currentUser.uid;
+            errorToast('⚠️ Deleting account and all associated data...');
+
+            // First, Delete Firestore User Document
+            // This Will Trigger Cloud Function Cascading Delete
+            await deleteUserDocument(uid);
 
             // Logout (clears Redux state)
             await dispatch(logout());
 
-            successToast('✅ Account deleted successfully.');
+            successToast('✅ Account & all data deleted successfully.');
             router.push('/register');
         } catch (error: unknown) {
             if ((error as { code?: string }).code === 'auth/requires-recent-login') {
@@ -363,8 +367,9 @@ export const Profile = () => {
                         {/* Warning Text */}
                         <div className='bg-error/10 border border-error/50 rounded-lg p-4 mb-6'>
                             <p className='text-text-primary text-sm leading-relaxed'>
-                                You are about to permanently delete your account. All your date, including orders
-                                and profile information, will be lost forever.
+                                You are about to permanently delete your account. All your data, including{' '}
+                                <strong className='text-error'>all orders</strong> and profile information,
+                                will be automatically removed from our servers. This action cannot be undone.
                             </p>
                         </div>
 
