@@ -12,6 +12,7 @@ export const store = configureStore({
         getDefaultMiddleware().concat(cartSyncMiddleware),
 });
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
+// Infer the `RootState`, `AppDispatch`, and `AppStore` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export type AppStore = typeof store;
