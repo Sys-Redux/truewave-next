@@ -2,6 +2,14 @@
 
 # TrueWave - Cyberpunk E-Commerce Platform
 
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-truewave--next.vercel.app-00D9FF?style=for-the-badge&logo=vercel&logoColor=white)](https://truewave-next.vercel.app/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/t-edge/)
+[![Email](https://img.shields.io/badge/Email-edge.t.xyz%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:edge.t.xyz@gmail.com)
+
+</div>
+
 A full-stack e-commerce application with a custom cyberpunk theme that I built to demonstrate modern web development practices. This project started as a React + Vite application but I migrated it to **Next.js 16** to leverage the latest features and create a production-ready architecture.
 
 <div align="center">
